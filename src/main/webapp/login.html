@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=index.html?auth=login">
+  <title>PulseRoute — Redirecting...</title>
+  <script>
+    // Forward any query parameters
+    const params = window.location.search;
+    window.location.replace("index.html" + (params ? params : "?auth=login"));
+  </script>
+</head>
+<body style="background:#020617;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
+  <p>Connecting to unified PulseRoute portal... <a href="index.html?auth=login" style="color:#E85D24;">Click here if not redirected.</a></p>
+</body>
+</html>

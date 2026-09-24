@@ -1,0 +1,24 @@
+# MySQL Local Server Database files
+mysql-data/
+*.log
+
+# Compiled binaries and archives
+target/
+*.war
+src/pulseroute.war
+pulseroute.war
+src/main/webapp/WEB-INF/classes/
+*.class
+
+# IDE and Editor files
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS generated files
+Thumbs.db
+[Dd]esktop.ini
+.DS_Store

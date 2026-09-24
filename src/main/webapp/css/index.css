@@ -1,0 +1,211 @@
+/* PulseRoute Custom Stylesheet & Core Animations */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Concentric SOS Pulse Rings */
+@keyframes sos-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.sos-ring {
+  animation: sos-pulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.sos-ring-delay-1 {
+  animation: sos-pulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: 0.7s;
+}
+.sos-ring-delay-2 {
+  animation: sos-pulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: 1.4s;
+}
+
+/* Fast SOS Pulse when clicked / connecting */
+@keyframes sos-pulse-fast {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.sos-ring-fast {
+  animation: sos-pulse-fast 0.9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.sos-ring-fast-delay-1 {
+  animation: sos-pulse-fast 0.9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: 0.3s;
+}
+.sos-ring-fast-delay-2 {
+  animation: sos-pulse-fast 0.9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: 0.6s;
+}
+
+/* Map Route Line Flow Animation */
+@keyframes route-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+.route-line {
+  stroke-dasharray: 6, 4;
+  animation: route-flow 1.2s linear infinite;
+}
+
+/* Map Beacon Pulse */
+@keyframes beacon-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.85;
+  }
+}
+.beacon-dot {
+  transform-origin: center;
+  animation: beacon-glow 2s ease-in-out infinite;
+}
+
+/* Fade-in Page Transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-in {
+  animation: fadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Pulse animation for active emergency indicator */
+@keyframes active-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+.active-pulse {
+  animation: active-pulse 1.5s ease-in-out infinite;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Premium gradient borders */
+.gradient-border-accent {
+  position: relative;
+}
+.gradient-border-accent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, #E85D24, #ef4444);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* CPR Chest Compressions Pulse (100 BPM = 0.6s cycle) */
+@keyframes cpr-compress {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45);
+  }
+  20% {
+    transform: scale(0.86);
+    box-shadow: 0 0 0 16px rgba(239, 68, 68, 0);
+  }
+  45% {
+    transform: scale(1.05);
+  }
+}
+.cpr-pulse {
+  animation: cpr-compress 0.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* CCTV Vehicles Flow Animations */
+@keyframes cctv-vehicle-flow {
+  0% {
+    transform: translateX(-40px);
+  }
+  100% {
+    transform: translateX(190px);
+  }
+}
+.cctv-car-flow-1 {
+  animation: cctv-vehicle-flow 3.5s linear infinite;
+}
+.cctv-car-flow-2 {
+  animation: cctv-vehicle-flow 5s linear infinite;
+  animation-delay: 1.2s;
+}
+.cctv-car-flow-3 {
+  animation: cctv-vehicle-flow 4.2s linear infinite;
+  animation-delay: 0.6s;
+}
+
+/* Checklist Staggered Slide Up */
+@keyframes slide-up-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.reveal-item {
+  opacity: 0;
+  animation: slide-up-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.delay-75 { animation-delay: 75ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-225 { animation-delay: 225ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-375 { animation-delay: 375ms; }
+.delay-450 { animation-delay: 450ms; }
+
+/* SVG Gauge animation */
+@keyframes gauge-fill-animation {
+  from {
+    stroke-dashoffset: 251.2;
+  }
+}
+.gauge-fill {
+  animation: gauge-fill-animation 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
