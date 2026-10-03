@@ -31,8 +31,12 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Redirect to single unified index.html
-        response.sendRedirect(request.getContextPath() + "/index.html");
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("user") != null) {
+            response.sendRedirect(request.getContextPath() + "/dashboard.html");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/login.html");
+        }
     }
 
     @Override
@@ -50,7 +54,7 @@ public class LoginServlet extends HttpServlet {
         // Basic input validation
         if (identifier == null || identifier.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             String errorMsg = URLEncoder.encode("Please enter both Citizen ID/Email and Password.", StandardCharsets.UTF_8);
-            response.sendRedirect(request.getContextPath() + "/index.html?error=missing_fields&msg=" + errorMsg);
+            response.sendRedirect(request.getContextPath() + "/login.html?error=missing_fields&msg=" + errorMsg);
             return;
         }
 
@@ -84,9 +88,9 @@ public class LoginServlet extends HttpServlet {
                     "\",\"mobile\":\"" + authenticatedUser.getMobile() +
                     "\",\"emergencyContact\":\"" + (authenticatedUser.getEmergencyContact() != null ? authenticatedUser.getEmergencyContact() : "") +
                     "\",\"address\":\"" + (authenticatedUser.getAddress() != null ? authenticatedUser.getAddress().replace("\"", "\\\"") : "") +
-                    "\"},\"redirect\":\"" + request.getContextPath() + "/index.html\"}");
+                    "\"},\"redirect\":\"" + request.getContextPath() + "/dashboard.html\"}");
             } else {
-                response.sendRedirect(request.getContextPath() + "/index.html");
+                response.sendRedirect(request.getContextPath() + "/dashboard.html");
             }
         } else {
             // Failure: return unauthorized error
@@ -100,7 +104,7 @@ public class LoginServlet extends HttpServlet {
                 response.setContentType("application/json");
                 response.getWriter().write("{\"success\":false,\"message\":\"Invalid Citizen ID/Email or Password.\"}");
             } else {
-                response.sendRedirect(request.getContextPath() + "/index.html?error=invalid");
+                response.sendRedirect(request.getContextPath() + "/login.html?error=invalid");
             }
         }
     }

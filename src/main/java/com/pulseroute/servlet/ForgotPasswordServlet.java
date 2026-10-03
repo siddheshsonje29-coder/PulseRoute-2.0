@@ -29,7 +29,7 @@ public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/index.html?auth=forgot");
+        response.sendRedirect(request.getContextPath() + "/login.html?view=forgot");
     }
 
     @Override
@@ -75,10 +75,10 @@ public class ForgotPasswordServlet extends HttpServlet {
             String successMsg = "Password updated successfully. Please login with your new credentials.";
             if (isAjax) {
                 response.setContentType("application/json");
-                response.getWriter().write("{\"success\":true,\"message\":\"" + successMsg + "\",\"redirect\":\"" + request.getContextPath() + "/index.html?auth=login&msg=password_reset\"}");
+                response.getWriter().write("{\"success\":true,\"message\":\"" + successMsg + "\",\"redirect\":\"" + request.getContextPath() + "/login.html?msg=password_reset\"}");
             } else {
                 String encoded = URLEncoder.encode(successMsg, StandardCharsets.UTF_8);
-                response.sendRedirect(request.getContextPath() + "/index.html?auth=login&msg=password_reset&text=" + encoded);
+                response.sendRedirect(request.getContextPath() + "/login.html?msg=password_reset&text=" + encoded);
             }
         } else {
             sendError(request, response, isAjax, "Identity verification failed. Please check Citizen ID, registered email, and emergency contact.", "verification_failed");
@@ -92,7 +92,7 @@ public class ForgotPasswordServlet extends HttpServlet {
             resp.getWriter().write("{\"success\":false,\"error\":\"" + code + "\",\"message\":\"" + msg + "\"}");
         } else {
             String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
-            resp.sendRedirect(req.getContextPath() + "/index.html?auth=forgot&error=" + code + "&msg=" + encoded);
+            resp.sendRedirect(req.getContextPath() + "/login.html?view=forgot&error=" + code + "&msg=" + encoded);
         }
     }
 }

@@ -37,7 +37,7 @@ public class SignupServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/index.html?auth=signup");
+        response.sendRedirect(request.getContextPath() + "/login.html?view=signup");
     }
 
     @Override
@@ -122,9 +122,9 @@ public class SignupServlet extends HttpServlet {
         if (saved) {
             if (isAjax) {
                 response.setContentType("application/json");
-                response.getWriter().write("{\"success\":true,\"message\":\"Account created successfully. Please login.\",\"redirect\":\"" + request.getContextPath() + "/index.html?auth=login&msg=registered\"}");
+                response.getWriter().write("{\"success\":true,\"message\":\"Account created successfully. Please login.\",\"redirect\":\"" + request.getContextPath() + "/login.html?msg=registered\"}");
             } else {
-                response.sendRedirect(request.getContextPath() + "/index.html?auth=login&msg=registered");
+                response.sendRedirect(request.getContextPath() + "/login.html?msg=registered");
             }
         } else {
             sendError(request, response, isAjax, "Unable to register citizen account due to a database error. Please try again.", "db_error");
@@ -138,7 +138,7 @@ public class SignupServlet extends HttpServlet {
             resp.getWriter().write("{\"success\":false,\"error\":\"" + code + "\",\"message\":\"" + msg + "\"}");
         } else {
             String encoded = URLEncoder.encode(msg, StandardCharsets.UTF_8);
-            resp.sendRedirect(req.getContextPath() + "/index.html?auth=signup&error=" + code + "&msg=" + encoded);
+            resp.sendRedirect(req.getContextPath() + "/login.html?view=signup&error=" + code + "&msg=" + encoded);
         }
     }
 

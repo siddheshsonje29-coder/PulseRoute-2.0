@@ -58,30 +58,38 @@ public class HospitalAmbulanceServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
-        boolean dispatchableOnly = "true".equalsIgnoreCase(request.getParameter("dispatchable"));
-        List<Ambulance> list = dispatchableOnly ? 
-                ambulanceDAO.findDispatchableAmbulances(hospital.getHospitalId()) : 
-                ambulanceDAO.findByHospitalId(hospital.getHospitalId());
+        List<Ambulance> allList = ambulanceDAO.findByHospitalId(hospital.getHospitalId());
+        List<Ambulance> dispatchableList = ambulanceDAO.findDispatchableAmbulances(hospital.getHospitalId());
 
         StringBuilder json = new StringBuilder();
         json.append("{\"success\":true,\"ambulances\":[");
-        for (int i = 0; i < list.size(); i++) {
-            Ambulance a = list.get(i);
+        for (int i = 0; i < allList.size(); i++) {
+            Ambulance a = allList.get(i);
             if (i > 0) json.append(",");
-            json.append("{")
-                .append("\"ambulanceId\":").append(a.getAmbulanceId()).append(",")
-                .append("\"hospitalId\":").append(a.getHospitalId()).append(",")
-                .append("\"vehicleNumber\":\"").append(escapeJson(a.getVehicleNumber())).append("\",")
-                .append("\"driverName\":\"").append(escapeJson(a.getDriverName())).append("\",")
-                .append("\"driverContact\":\"").append(escapeJson(a.getDriverContact())).append("\",")
-                .append("\"status\":\"").append(escapeJson(a.getStatus())).append("\",")
-                .append("\"authorizationStatus\":\"").append(escapeJson(a.getAuthorizationStatus())).append("\",")
-                .append("\"currentLocation\":\"").append(escapeJson(a.getCurrentLocation())).append("\",")
-                .append("\"isDispatchable\":").append(a.isDispatchable())
-                .append("}");
+            appendAmbulanceJson(json, a);
+        }
+        json.append("],\"dispatchable\":[");
+        for (int i = 0; i < dispatchableList.size(); i++) {
+            Ambulance a = dispatchableList.get(i);
+            if (i > 0) json.append(",");
+            appendAmbulanceJson(json, a);
         }
         json.append("]}");
         response.getWriter().write(json.toString());
+    }
+
+    private void appendAmbulanceJson(StringBuilder json, Ambulance a) {
+        json.append("{")
+            .append("\"ambulanceId\":").append(a.getAmbulanceId()).append(",")
+            .append("\"hospitalId\":").append(a.getHospitalId()).append(",")
+            .append("\"vehicleNumber\":\"").append(escapeJson(a.getVehicleNumber())).append("\",")
+            .append("\"driverName\":\"").append(escapeJson(a.getDriverName())).append("\",")
+            .append("\"driverContact\":\"").append(escapeJson(a.getDriverContact())).append("\",")
+            .append("\"status\":\"").append(escapeJson(a.getStatus())).append("\",")
+            .append("\"authorizationStatus\":\"").append(escapeJson(a.getAuthorizationStatus())).append("\",")
+            .append("\"currentLocation\":\"").append(escapeJson(a.getCurrentLocation())).append("\",")
+            .append("\"isDispatchable\":").append(a.isDispatchable())
+            .append("}");
     }
 
     @Override

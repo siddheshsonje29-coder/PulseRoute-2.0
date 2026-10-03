@@ -46,9 +46,9 @@ public class LogoutServlet extends HttpServlet {
 
         if (isAjax) {
             response.setContentType("application/json");
-            response.getWriter().write("{\"success\":true,\"redirect\":\"" + request.getContextPath() + "/index.html?auth=login&msg=logged_out\"}");
+            response.getWriter().write("{\"success\":true,\"redirect\":\"" + request.getContextPath() + "/login.html?msg=logged_out\"}");
         } else {
-            response.sendRedirect(request.getContextPath() + "/index.html?auth=login&msg=logged_out");
+            response.sendRedirect(request.getContextPath() + "/login.html?msg=logged_out");
         }
     }
 }

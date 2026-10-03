@@ -48,13 +48,16 @@ public class AuthFilter implements Filter {
 
         HttpSession session = httpRequest.getSession(false);
 
-        // 2. Hospital Admin Routes Protection
+        // 2. Hospital / Admin / Responder Protected Routes
         if (isHospitalAdminPath(path)) {
             boolean isHospitalAdmin = (session != null && session.getAttribute("hospital") != null);
             if (isHospitalAdmin) {
-                chain.doFilter(request, response);
+                if (path.equalsIgnoreCase("/admin") || path.equalsIgnoreCase("/hospital") || path.equalsIgnoreCase("/responder")) {
+                    httpRequest.getRequestDispatcher("/hospital-dashboard.html").forward(request, response);
+                } else {
+                    chain.doFilter(request, response);
+                }
             } else {
-                // Deny access to normal users and unauthenticated users
                 if (path.startsWith("/hospital/")) {
                     httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     httpResponse.setContentType("application/json");
@@ -72,12 +75,16 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // 4. Default Protected Citizen Pages
+        // 4. Protected Citizen Dashboard Routes (/dashboard, /dashboard.html)
         boolean isCitizenLoggedIn = (session != null && session.getAttribute("user") != null);
         if (isCitizenLoggedIn) {
-            chain.doFilter(request, response);
+            if (path.equalsIgnoreCase("/dashboard")) {
+                httpRequest.getRequestDispatcher("/dashboard.html").forward(request, response);
+            } else {
+                chain.doFilter(request, response);
+            }
         } else {
-            httpResponse.sendRedirect(contextPath + "/index.html");
+            httpResponse.sendRedirect(contextPath + "/login.html?error=unauthorized");
         }
     }
 
@@ -85,6 +92,8 @@ public class AuthFilter implements Filter {
         String lower = path.toLowerCase();
         return lower.equals("/") ||
                lower.equals("/index.html") ||
+               lower.equals("/about") ||
+               lower.equals("/contact") ||
                lower.equals("/login.html") ||
                lower.equals("/signup.html") ||
                lower.equals("/forgot-password.html") ||
@@ -116,6 +125,9 @@ public class AuthFilter implements Filter {
     private boolean isHospitalAdminPath(String path) {
         String lower = path.toLowerCase();
         return lower.equals("/hospital-dashboard.html") ||
+               lower.equals("/admin") ||
+               lower.equals("/hospital") ||
+               lower.equals("/responder") ||
                (lower.startsWith("/hospital/") && 
                 !lower.startsWith("/hospital/login") && 
                 !lower.startsWith("/hospital/logout") && 

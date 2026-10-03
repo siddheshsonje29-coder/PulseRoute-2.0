@@ -449,9 +449,10 @@
       try {
         // 1. Fetch Ambulances
         const ambRes = await fetch('hospital/ambulances', { headers: { 'Accept': 'application/json' } });
-        const ambData = await ambRes.json();
         allAmbulances = ambData.ambulances || [];
-        dispatchableAmbulances = ambData.dispatchable || [];
+        dispatchableAmbulances = (ambData.dispatchable && ambData.dispatchable.length > 0)
+          ? ambData.dispatchable
+          : allAmbulances.filter(a => (a.isDispatchable === true || (a.status === 'AVAILABLE' && a.authorizationStatus === 'AUTHORIZED')));
 
         document.getElementById('badgeFleetCount').textContent = allAmbulances.length;
         renderFleetTable(allAmbulances);
@@ -774,22 +775,26 @@
       const notice = document.getElementById('assignAmbulanceNotice');
       const confirmBtn = document.getElementById('confirmAssignBtn');
 
-      // Populate only dispatchable ambulances
-      if (!dispatchableAmbulances || dispatchableAmbulances.length === 0) {
+      // Populate dispatchable ambulances with robust fallback
+      const availableList = (dispatchableAmbulances && dispatchableAmbulances.length > 0)
+        ? dispatchableAmbulances
+        : (allAmbulances || []).filter(a => (a.isDispatchable === true || (a.status === 'AVAILABLE' && a.authorizationStatus === 'AUTHORIZED')));
+
+      if (!availableList || availableList.length === 0) {
         select.innerHTML = '<option value="">-- No Authorized Available Ambulances --</option>';
         select.disabled = true;
         confirmBtn.disabled = true;
-        notice.textContent = "⚠️ All authorized ambulances under your hospital are currently assigned, offline, or revoked. Please authorize or release a unit.";
+        notice.textContent = "⚠️ All authorized ambulances under your hospital are currently assigned, offline, or revoked. Please authorize or release a unit in the Fleet Management table below.";
         notice.className = "text-[11px] text-rose-700 mt-1 font-semibold";
       } else {
         select.disabled = false;
         confirmBtn.disabled = false;
-        select.innerHTML = dispatchableAmbulances.map(a => `
+        select.innerHTML = availableList.map(a => `
           <option value="${a.ambulanceId}">
             ${a.vehicleNumber} — Driver: ${a.driverName} (${a.currentLocation || 'Hospital Bay'})
           </option>
         `).join('');
-        notice.textContent = `Found ${dispatchableAmbulances.length} authorized available ambulance(s) ready for immediate deployment.`;
+        notice.textContent = `✓ Found ${availableList.length} authorized available ambulance(s) ready for immediate deployment.`;
         notice.className = "text-[11px] text-emerald-700 mt-1 font-semibold";
       }
 

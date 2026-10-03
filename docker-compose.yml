@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # MySQL 8.4 Database Container with automatic schema initialization
+  db:
+    image: mysql:8.4
+    container_name: pulseroute-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pulseroute
+    ports:
+      - "3306:3306"
+    volumes:
+      - pulseroute_mysql_data:/var/lib/mysql
+      - ./hospital_schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # PulseRoute Java 21 / Tomcat 11 Web Application
+  app:
+    build: .
+    container_name: pulseroute-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PULSEROUTE_DB_URL: "jdbc:mysql://db:3306/pulseroute?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8"
+      PULSEROUTE_DB_USER: "root"
+      PULSEROUTE_DB_PASSWORD: "root"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pulseroute_mysql_data:
