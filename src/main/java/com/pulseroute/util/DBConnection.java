@@ -38,7 +38,27 @@ public class DBConnection {
             envUrl = System.getenv("MYSQL_URL");
         }
         if (envUrl == null || envUrl.trim().isEmpty()) {
+            envUrl = System.getenv("DATABASE_URL");
+        }
+        if (envUrl == null || envUrl.trim().isEmpty()) {
             envUrl = System.getProperty("db.url");
+        }
+
+        // If no full URL is set, check individual Railway variables (MYSQLHOST, etc.)
+        if (envUrl == null || envUrl.trim().isEmpty()) {
+            String mHost = System.getenv("MYSQLHOST");
+            if (mHost == null || mHost.trim().isEmpty()) mHost = System.getenv("MYSQL_HOST");
+            if (mHost != null && !mHost.trim().isEmpty()) {
+                String mPort = System.getenv("MYSQLPORT");
+                if (mPort == null || mPort.trim().isEmpty()) mPort = System.getenv("MYSQL_PORT");
+                if (mPort == null || mPort.trim().isEmpty()) mPort = "3306";
+
+                String mDb = System.getenv("MYSQLDATABASE");
+                if (mDb == null || mDb.trim().isEmpty()) mDb = System.getenv("MYSQL_DATABASE");
+                if (mDb == null || mDb.trim().isEmpty()) mDb = "railway";
+
+                envUrl = "jdbc:mysql://" + mHost.trim() + ":" + mPort.trim() + "/" + mDb.trim() + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8";
+            }
         }
 
         if (envUrl != null && !envUrl.trim().isEmpty()) {
@@ -48,11 +68,13 @@ public class DBConnection {
         String envUser = System.getenv("PULSEROUTE_DB_USER");
         if (envUser != null && !envUser.trim().isEmpty()) dbUser = envUser.trim();
         else if (System.getenv("MYSQLUSER") != null) dbUser = System.getenv("MYSQLUSER").trim();
+        else if (System.getenv("MYSQL_USER") != null) dbUser = System.getenv("MYSQL_USER").trim();
         else if (System.getProperty("db.user") != null) dbUser = System.getProperty("db.user").trim();
 
         String envPass = System.getenv("PULSEROUTE_DB_PASSWORD");
         if (envPass != null) dbPassword = envPass;
         else if (System.getenv("MYSQLPASSWORD") != null) dbPassword = System.getenv("MYSQLPASSWORD");
+        else if (System.getenv("MYSQL_PASSWORD") != null) dbPassword = System.getenv("MYSQL_PASSWORD");
         else if (System.getProperty("db.password") != null) dbPassword = System.getProperty("db.password");
 
         // Load MySQL Driver

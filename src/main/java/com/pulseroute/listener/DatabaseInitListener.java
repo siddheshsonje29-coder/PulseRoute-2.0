@@ -55,7 +55,7 @@ public class DatabaseInitListener implements ServletContextListener {
         }
     }
 
-    private void executeInitScript(Connection conn) {
+    public void executeInitScript(Connection conn) {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream("init.sql")) {
             if (in == null) {
                 System.err.println("[DatabaseInitListener] init.sql not found in resources!");

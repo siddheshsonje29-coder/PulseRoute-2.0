@@ -105,6 +105,8 @@ public class AuthFilter implements Filter {
                lower.startsWith("/logout") ||
                lower.startsWith("/forgot-password") ||
                lower.startsWith("/emergency/") ||
+               lower.startsWith("/db-health") ||
+               lower.startsWith("/api/db-health") ||
                lower.startsWith("/api/session") ||
                lower.startsWith("/hospital/session") ||
                lower.endsWith(".css") ||

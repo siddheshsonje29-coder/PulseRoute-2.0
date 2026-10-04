@@ -88,6 +88,17 @@
         <url-pattern>/api/session</url-pattern>
     </servlet-mapping>
 
+    <!-- DB Health & Diagnostics Servlet -->
+    <servlet>
+        <servlet-name>DbHealthServlet</servlet-name>
+        <servlet-class>com.pulseroute.servlet.DbHealthServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DbHealthServlet</servlet-name>
+        <url-pattern>/db-health</url-pattern>
+        <url-pattern>/api/db-health</url-pattern>
+    </servlet-mapping>
+
     <!-- Hospital Login Servlet -->
     <servlet>
         <servlet-name>HospitalLoginServlet</servlet-name>
