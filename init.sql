@@ -21,27 +21,16 @@ CREATE TABLE IF NOT EXISTS users (
     INDEX idx_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Seed Sample Citizen User
--- Citizen ID: CIT-9901 | Password: Pulse@123 (BCrypt hashed)
-INSERT INTO users (full_name, email, mobile, citizen_id, password, emergency_contact, address)
-VALUES (
-    'Aditya Sharma',
-    'aditya.sharma@pulseroute.gov',
-    '9876543210',
-    'CIT-9901',
-    '$2a$12$e6WwT41f.j1y06D4h3U.g.2K6zV7WbEwT48KjH0j65nL8k8F9U4lC',
-    '9876500000',
-    'Flat 402, Sea Green Heights, Worli Sea Face, Mumbai 400018'
-) ON DUPLICATE KEY UPDATE full_name=VALUES(full_name);
-
--- Additional Seed Citizens for quick evaluation
--- Passwords are: Password@123 ($2a$12$7Jg8Nl0bWw1u.K4ZpM7d.eU0qZ5WzI1u5mY4eC3yZ8vK9wO0aB)
+-- Seed Verified Demo Citizen Users (Password: Password@123)
+-- BCrypt Hash: $2a$12$PbvN8UaxLtXJDoUyJikYE.PGToBAa3O8OU6F6RuINyEew1MffETSK
 INSERT INTO users (full_name, email, mobile, citizen_id, password, emergency_contact, address)
 VALUES 
-('Aarav Sharma', 'aarav.sharma@example.com', '9820011223', 'CIT-9012', '$2a$12$siNH.NTcwtfE1E0wq0BU0uFG6FIvimcghQ2CgxqDh9UX1bIuZ5SSK', '9820099887', 'Bandra West, Mumbai'),
-('Priya Patel', 'priya.patel@example.com', '9820022334', 'CIT-4481', '$2a$12$siNH.NTcwtfE1E0wq0BU0uFG6FIvimcghQ2CgxqDh9UX1bIuZ5SSK', '9820088776', 'Andheri East, Mumbai'),
-('Rohit Verma', 'rohit.verma@example.com', '9820033445', 'CIT-7734', '$2a$12$siNH.NTcwtfE1E0wq0BU0uFG6FIvimcghQ2CgxqDh9UX1bIuZ5SSK', '9820077665', 'Dadar, Mumbai')
-ON DUPLICATE KEY UPDATE full_name=VALUES(full_name);
+('Siddhesh R', 'siddhesh@example.com', '9820011222', 'CIT-7701', '$2a$12$PbvN8UaxLtXJDoUyJikYE.PGToBAa3O8OU6F6RuINyEew1MffETSK', '9820099111', 'Worli, Mumbai'),
+('Aditya Sharma', 'aditya.sharma@pulseroute.gov', '9876543210', 'CIT-9901', '$2a$12$PbvN8UaxLtXJDoUyJikYE.PGToBAa3O8OU6F6RuINyEew1MffETSK', '9876500000', 'Flat 402, Sea Green Heights, Worli Sea Face, Mumbai 400018'),
+('Aarav Sharma', 'aarav.sharma@example.com', '9820011223', 'CIT-9012', '$2a$12$PbvN8UaxLtXJDoUyJikYE.PGToBAa3O8OU6F6RuINyEew1MffETSK', '9820099887', 'Bandra West, Mumbai'),
+('Priya Patel', 'priya.patel@example.com', '9820022334', 'CIT-4481', '$2a$12$PbvN8UaxLtXJDoUyJikYE.PGToBAa3O8OU6F6RuINyEew1MffETSK', '9820088776', 'Andheri East, Mumbai'),
+('Rohit Verma', 'rohit.verma@example.com', '9820033445', 'CIT-7734', '$2a$12$PbvN8UaxLtXJDoUyJikYE.PGToBAa3O8OU6F6RuINyEew1MffETSK', '9820077665', 'Dadar, Mumbai')
+ON DUPLICATE KEY UPDATE password=VALUES(password), full_name=VALUES(full_name);
 
 -- 2. Hospitals Table
 CREATE TABLE IF NOT EXISTS hospitals (

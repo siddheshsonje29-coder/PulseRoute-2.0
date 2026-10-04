@@ -157,8 +157,21 @@ public class UserDAO {
         }
 
         // Validate BCrypt hash
-        if (BCrypt.checkpw(rawPassword, user.getPassword())) {
-            return user;
+        try {
+            if (user.getPassword() != null) {
+                if (user.getPassword().startsWith("$2a$") || user.getPassword().startsWith("$2b$") || user.getPassword().startsWith("$2y$")) {
+                    if (BCrypt.checkpw(rawPassword, user.getPassword())) {
+                        return user;
+                    }
+                } else if (user.getPassword().equals(rawPassword)) {
+                    return user;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[UserDAO] Password check exception: " + e.getMessage());
+            if (user.getPassword() != null && user.getPassword().equals(rawPassword)) {
+                return user;
+            }
         }
         return null;
     }
