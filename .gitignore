@@ -4,9 +4,7 @@ mysql-data/
 
 # Compiled binaries and archives
 target/
-*.war
 src/pulseroute.war
-pulseroute.war
 src/main/webapp/WEB-INF/classes/
 *.class
 
