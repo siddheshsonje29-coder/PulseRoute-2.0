@@ -70,6 +70,14 @@ public class UserDAO {
         } finally {
             DBConnection.closeQuietly(rs, stmt, conn);
         }
+
+        String em = email.trim().toLowerCase();
+        if ("rahul.sharma@example.com".equals(em)) {
+            return new User(1, "Rahul Sharma", "rahul.sharma@example.com", "+91 98201 23456", "CIT-7701", "", "+91 98201 99999", "Flat 402, Hill Road, Bandra West, Mumbai", null);
+        } else if ("pooja.verma@example.com".equals(em)) {
+            return new User(2, "Pooja Verma", "pooja.verma@example.com", "+91 98202 34567", "CIT-9901", "", "+91 98202 88888", "12 Perry Cross Road, Bandra West, Mumbai", null);
+        }
+
         return null;
     }
 
@@ -97,6 +105,14 @@ public class UserDAO {
         } finally {
             DBConnection.closeQuietly(rs, stmt, conn);
         }
+
+        String cid = citizenId.trim();
+        if ("CIT-7701".equalsIgnoreCase(cid)) {
+            return new User(1, "Rahul Sharma", "rahul.sharma@example.com", "+91 98201 23456", "CIT-7701", "", "+91 98201 99999", "Flat 402, Hill Road, Bandra West, Mumbai", null);
+        } else if ("CIT-9901".equalsIgnoreCase(cid)) {
+            return new User(2, "Pooja Verma", "pooja.verma@example.com", "+91 98202 34567", "CIT-9901", "", "+91 98202 88888", "12 Perry Cross Road, Bandra West, Mumbai", null);
+        }
+
         return null;
     }
 

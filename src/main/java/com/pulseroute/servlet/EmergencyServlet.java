@@ -130,6 +130,9 @@ public class EmergencyServlet extends HttpServlet {
 
         EmergencyRequest req = new EmergencyRequest();
         req.setUserId(user.getId());
+        req.setUserName(user.getFullName());
+        req.setUserMobile(user.getMobile());
+        req.setUserEmergencyContact(user.getEmergencyContact());
         req.setEmergencyType(type.trim());
         req.setUserLocation(location.trim());
         req.setStatus("PENDING");

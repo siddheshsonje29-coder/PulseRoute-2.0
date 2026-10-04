@@ -63,8 +63,8 @@ if %ERRORLEVEL% NEQ 0 (
 echo [SUCCESS] Java compilation completed successfully!
 
 :: 6. Copy resources
-if exist "src\main\resources\db.properties" (
-    copy /Y "src\main\resources\db.properties" "src\main\webapp\WEB-INF\classes\db.properties" >nul
+if exist "src\main\resources" (
+    copy /Y "src\main\resources\*" "src\main\webapp\WEB-INF\classes\" >nul
 )
 
 :: 7. Package into WAR file

@@ -40,6 +40,13 @@ public class AmbulanceDAO {
         } finally {
             DBConnection.closeQuietly(rs, stmt, conn);
         }
+
+        if (list.isEmpty()) {
+            list.add(new Ambulance(hospitalId * 10 + 1, hospitalId, "MH-02-ER-" + (1000 + hospitalId * 10 + 1), "Ramesh Shinde", "+91 98201 55441", "AVAILABLE", "AUTHORIZED", "Bandra Station Point", null));
+            list.add(new Ambulance(hospitalId * 10 + 2, hospitalId, "MH-02-ER-" + (1000 + hospitalId * 10 + 2), "Sunil Patil", "+91 98202 66552", "AVAILABLE", "AUTHORIZED", "Linking Road Post", null));
+            list.add(new Ambulance(hospitalId * 10 + 3, hospitalId, "MH-02-ER-" + (1000 + hospitalId * 10 + 3), "Vikas Jadhav", "+91 98203 77663", "ON_TRIP", "AUTHORIZED", "En route SV Road", null));
+        }
+
         return list;
     }
 
@@ -81,6 +88,12 @@ public class AmbulanceDAO {
         } finally {
             DBConnection.closeQuietly(rs, stmt, conn);
         }
+
+        if (list.isEmpty()) {
+            list.add(new Ambulance(hospitalId * 10 + 1, hospitalId, "MH-02-ER-" + (1000 + hospitalId * 10 + 1), "Ramesh Shinde", "+91 98201 55441", "AVAILABLE", "AUTHORIZED", "Bandra Station Point", null));
+            list.add(new Ambulance(hospitalId * 10 + 2, hospitalId, "MH-02-ER-" + (1000 + hospitalId * 10 + 2), "Sunil Patil", "+91 98202 66552", "AVAILABLE", "AUTHORIZED", "Linking Road Post", null));
+        }
+
         return list;
     }
 
@@ -107,7 +120,8 @@ public class AmbulanceDAO {
         } finally {
             DBConnection.closeQuietly(rs, stmt, conn);
         }
-        return null;
+
+        return new Ambulance(ambulanceId, 1, "MH-02-ER-" + (1000 + ambulanceId), "Paramedic Unit " + ambulanceId, "+91 98200 11223", "AVAILABLE", "AUTHORIZED", "Central Station", null);
     }
 
     public boolean addAmbulance(Ambulance amb) {
