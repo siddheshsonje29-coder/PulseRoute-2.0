@@ -51,9 +51,9 @@ for /R "src\main\java" %%F in (*.java) do (
     set SOURCES=!SOURCES! "%%F"
 )
 
-:: 5. Compile Java sources
-echo [INFO] Compiling Java classes with javac...
-javac -encoding UTF-8 -d "src\main\webapp\WEB-INF\classes" -cp "%SERVLET_JAR%" !SOURCES!
+:: 5. Compile Java sources (Target Java 17 for maximum Tomcat 11 & JDK 21 compatibility)
+echo [INFO] Compiling Java classes with javac (--release 17)...
+javac --release 17 -encoding UTF-8 -d "src\main\webapp\WEB-INF\classes" -cp "%SERVLET_JAR%" !SOURCES!
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Compilation failed!
