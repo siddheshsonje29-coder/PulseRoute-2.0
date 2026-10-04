@@ -8,27 +8,7 @@
     <display-name>PulseRoute Emergency Portal</display-name>
     <description>PulseRoute Citizen Emergency Coordination System with Java Servlet Authentication</description>
 
-    <!-- Welcome File List -->
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
-
-    <!-- Session Configuration -->
-    <session-config>
-        <session-timeout>30</session-timeout>
-        <cookie-config>
-            <http-only>true</http-only>
-            <name>JSESSIONID</name>
-        </cookie-config>
-        <tracking-mode>COOKIE</tracking-mode>
-    </session-config>
-
-    <!-- Database Schema Auto-Initializer Listener -->
-    <listener>
-        <listener-class>com.pulseroute.listener.DatabaseInitListener</listener-class>
-    </listener>
-
-    <!-- Authentication Filter -->
+    <!-- 1. Authentication Filter -->
     <filter>
         <filter-name>AuthFilter</filter-name>
         <filter-class>com.pulseroute.filter.AuthFilter</filter-class>
@@ -38,6 +18,12 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- 2. Database Schema Auto-Initializer Listener -->
+    <listener>
+        <listener-class>com.pulseroute.listener.DatabaseInitListener</listener-class>
+    </listener>
+
+    <!-- 3. Servlets and Servlet Mappings -->
     <!-- Login Servlet -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -167,5 +153,20 @@
         <url-pattern>/emergency/status</url-pattern>
         <url-pattern>/emergency/cancel</url-pattern>
     </servlet-mapping>
+
+    <!-- 4. Session Configuration -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+        <cookie-config>
+            <http-only>true</http-only>
+            <name>JSESSIONID</name>
+        </cookie-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+    <!-- 5. Welcome File List -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 
 </web-app>

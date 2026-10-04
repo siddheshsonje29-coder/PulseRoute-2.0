@@ -22,37 +22,37 @@ public class DatabaseInitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        System.out.println("[DatabaseInitListener] Verifying database schema...");
+        new Thread(() -> {
+            System.out.println("[DatabaseInitListener] Verifying database schema in background...");
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rs = null;
 
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DBConnection.getConnection();
-            stmt = conn.createStatement();
-
-            boolean needsInit = false;
             try {
-                rs = stmt.executeQuery("SELECT 1 FROM users LIMIT 1");
-            } catch (Exception e) {
-                // Table 'users' does not exist yet
-                needsInit = true;
-            }
+                conn = DBConnection.getConnection();
+                stmt = conn.createStatement();
 
-            if (needsInit) {
-                System.out.println("[DatabaseInitListener] Tables not found. Initializing database from init.sql...");
-                executeInitScript(conn);
-                System.out.println("[DatabaseInitListener] Database schema and initial seeds initialized successfully!");
-            } else {
-                System.out.println("[DatabaseInitListener] Database schema verified. Tables already exist.");
-            }
+                boolean needsInit = false;
+                try {
+                    rs = stmt.executeQuery("SELECT 1 FROM users LIMIT 1");
+                } catch (Exception e) {
+                    needsInit = true;
+                }
 
-        } catch (Exception e) {
-            System.err.println("[DatabaseInitListener] Error verifying/initializing database: " + e.getMessage());
-        } finally {
-            DBConnection.closeQuietly(rs, stmt, conn);
-        }
+                if (needsInit) {
+                    System.out.println("[DatabaseInitListener] Tables not found. Initializing database from init.sql...");
+                    executeInitScript(conn);
+                    System.out.println("[DatabaseInitListener] Database schema and initial seeds initialized successfully!");
+                } else {
+                    System.out.println("[DatabaseInitListener] Database schema verified. Tables already exist.");
+                }
+
+            } catch (Throwable t) {
+                System.err.println("[DatabaseInitListener] Notice: Database check failed: " + t.getMessage());
+            } finally {
+                DBConnection.closeQuietly(rs, stmt, conn);
+            }
+        }, "PulseRoute-DBInit").start();
     }
 
     public void executeInitScript(Connection conn) {
