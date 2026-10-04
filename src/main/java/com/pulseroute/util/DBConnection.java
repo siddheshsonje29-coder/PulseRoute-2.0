@@ -12,8 +12,8 @@ import java.util.Properties;
 public class DBConnection {
 
     private static String dbUrl = "jdbc:mysql://localhost:3306/pulseroute?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8";
-    private static String dbUser = "root";
-    private static String dbPassword = "root";
+    private static String dbUser = "pulseroute";
+    private static String dbPassword = "";
     private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
 
     static {
@@ -55,7 +55,7 @@ public class DBConnection {
 
                 String mDb = System.getenv("MYSQLDATABASE");
                 if (mDb == null || mDb.trim().isEmpty()) mDb = System.getenv("MYSQL_DATABASE");
-                if (mDb == null || mDb.trim().isEmpty()) mDb = "railway";
+                if (mDb == null || mDb.trim().isEmpty()) mDb = "pulseroute";
 
                 envUrl = "jdbc:mysql://" + mHost.trim() + ":" + mPort.trim() + "/" + mDb.trim() + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8";
             }
@@ -67,14 +67,14 @@ public class DBConnection {
 
         String envUser = System.getenv("PULSEROUTE_DB_USER");
         if (envUser != null && !envUser.trim().isEmpty()) dbUser = envUser.trim();
-        else if (System.getenv("MYSQLUSER") != null) dbUser = System.getenv("MYSQLUSER").trim();
         else if (System.getenv("MYSQL_USER") != null) dbUser = System.getenv("MYSQL_USER").trim();
+        else if (System.getenv("MYSQLUSER") != null && !"root".equalsIgnoreCase(System.getenv("MYSQLUSER"))) dbUser = System.getenv("MYSQLUSER").trim();
         else if (System.getProperty("db.user") != null) dbUser = System.getProperty("db.user").trim();
 
         String envPass = System.getenv("PULSEROUTE_DB_PASSWORD");
         if (envPass != null) dbPassword = envPass;
-        else if (System.getenv("MYSQLPASSWORD") != null) dbPassword = System.getenv("MYSQLPASSWORD");
         else if (System.getenv("MYSQL_PASSWORD") != null) dbPassword = System.getenv("MYSQL_PASSWORD");
+        else if (System.getenv("MYSQLPASSWORD") != null) dbPassword = System.getenv("MYSQLPASSWORD");
         else if (System.getProperty("db.password") != null) dbPassword = System.getProperty("db.password");
 
         // Load MySQL Driver
@@ -100,7 +100,7 @@ public class DBConnection {
                 }
                 String host = uri.getHost();
                 int port = uri.getPort() > 0 ? uri.getPort() : 3306;
-                String path = uri.getPath(); // e.g. "/railway"
+                String path = uri.getPath();
                 if (path == null || path.isEmpty() || path.equals("/")) {
                     path = "/pulseroute";
                 }
@@ -118,13 +118,31 @@ public class DBConnection {
     }
 
     /**
-     * Obtains a fresh database connection.
-     *
-     * @return active java.sql.Connection
-     * @throws SQLException on connection failure
+     * Obtains a fresh database connection with smart user fallback.
      */
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        try {
+            return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        } catch (SQLException e) {
+            String msg = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
+            if (msg.contains("access denied")) {
+                if (!"pulseroute".equalsIgnoreCase(dbUser)) {
+                    try {
+                        Connection c = DriverManager.getConnection(dbUrl, "pulseroute", dbPassword);
+                        dbUser = "pulseroute";
+                        return c;
+                    } catch (SQLException ignored) {}
+                }
+                if (!"root".equalsIgnoreCase(dbUser)) {
+                    try {
+                        Connection c = DriverManager.getConnection(dbUrl, "root", dbPassword);
+                        dbUser = "root";
+                        return c;
+                    } catch (SQLException ignored) {}
+                }
+            }
+            throw e;
+        }
     }
 
     /**
