@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -123,25 +125,50 @@ public class DBConnection {
     public static Connection getConnection() throws SQLException {
         try {
             return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-        } catch (SQLException e) {
-            String msg = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
-            if (msg.contains("access denied")) {
-                if (!"pulseroute".equalsIgnoreCase(dbUser)) {
-                    try {
-                        Connection c = DriverManager.getConnection(dbUrl, "pulseroute", dbPassword);
-                        dbUser = "pulseroute";
-                        return c;
-                    } catch (SQLException ignored) {}
-                }
-                if (!"root".equalsIgnoreCase(dbUser)) {
-                    try {
-                        Connection c = DriverManager.getConnection(dbUrl, "root", dbPassword);
-                        dbUser = "root";
-                        return c;
-                    } catch (SQLException ignored) {}
+        } catch (SQLException firstEx) {
+            System.err.println("[DBConnection] Primary connect failed (" + firstEx.getMessage() + "). Attempting auto-discovery fallbacks...");
+
+            List<String> urlsToTry = new ArrayList<>();
+            if (dbUrl != null) {
+                urlsToTry.add(dbUrl);
+                if (dbUrl.contains("/pulseroute")) {
+                    urlsToTry.add(dbUrl.replace("/pulseroute", "/railway"));
+                } else if (dbUrl.contains("/railway")) {
+                    urlsToTry.add(dbUrl.replace("/railway", "/pulseroute"));
                 }
             }
-            throw e;
+
+            List<String> usersToTry = new ArrayList<>();
+            if (dbUser != null) usersToTry.add(dbUser);
+            String mUser = System.getenv("MYSQLUSER");
+            if (mUser != null && !usersToTry.contains(mUser)) usersToTry.add(mUser);
+            if (!usersToTry.contains("root")) usersToTry.add("root");
+            if (!usersToTry.contains("pulseroute")) usersToTry.add("pulseroute");
+
+            List<String> passesToTry = new ArrayList<>();
+            if (dbPassword != null) passesToTry.add(dbPassword);
+            String mPass = System.getenv("MYSQLPASSWORD");
+            if (mPass != null && !passesToTry.contains(mPass)) passesToTry.add(mPass);
+            String mPass2 = System.getenv("MYSQL_PASSWORD");
+            if (mPass2 != null && !passesToTry.contains(mPass2)) passesToTry.add(mPass2);
+            if (!passesToTry.contains("")) passesToTry.add("");
+
+            for (String u : urlsToTry) {
+                for (String usr : usersToTry) {
+                    for (String pwd : passesToTry) {
+                        try {
+                            Connection conn = DriverManager.getConnection(u, usr, pwd);
+                            dbUrl = u;
+                            dbUser = usr;
+                            dbPassword = pwd;
+                            System.out.println("[DBConnection] Successfully connected using fallback: " + u + " with user: " + usr);
+                            return conn;
+                        } catch (SQLException ignored) {
+                        }
+                    }
+                }
+            }
+            throw firstEx;
         }
     }
 
