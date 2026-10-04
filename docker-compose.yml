@@ -13,7 +13,7 @@ services:
       - "3306:3306"
     volumes:
       - pulseroute_mysql_data:/var/lib/mysql
-      - ./hospital_schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s

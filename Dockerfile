@@ -29,4 +29,5 @@ COPY --from=builder /build/target/pulseroute.war /usr/local/tomcat/webapps/ROOT.
 
 EXPOSE 8080
 
-CMD ["catalina.sh", "run"]
+# Dynamically bind Tomcat to $PORT (assigned by Railway/cloud hosts), defaulting to 8080
+CMD ["sh", "-c", "sed -i \"s/port=\\\"8080\\\"/port=\\\"${PORT:-8080}\\\"/g\" /usr/local/tomcat/conf/server.xml && exec catalina.sh run"]

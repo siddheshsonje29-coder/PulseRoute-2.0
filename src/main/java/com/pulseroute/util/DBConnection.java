@@ -29,17 +29,30 @@ public class DBConnection {
         } catch (Exception ignored) {
         }
 
-        // 2. Override with system properties or environment variables if present
+        // 2. Check environment variables
         String envUrl = System.getenv("PULSEROUTE_DB_URL");
-        if (envUrl != null && !envUrl.trim().isEmpty()) dbUrl = envUrl.trim();
-        else if (System.getProperty("db.url") != null) dbUrl = System.getProperty("db.url").trim();
+        if (envUrl == null || envUrl.trim().isEmpty()) {
+            envUrl = System.getenv("MYSQL_PRIVATE_URL");
+        }
+        if (envUrl == null || envUrl.trim().isEmpty()) {
+            envUrl = System.getenv("MYSQL_URL");
+        }
+        if (envUrl == null || envUrl.trim().isEmpty()) {
+            envUrl = System.getProperty("db.url");
+        }
+
+        if (envUrl != null && !envUrl.trim().isEmpty()) {
+            parseAndSetDbConfig(envUrl.trim());
+        }
 
         String envUser = System.getenv("PULSEROUTE_DB_USER");
         if (envUser != null && !envUser.trim().isEmpty()) dbUser = envUser.trim();
+        else if (System.getenv("MYSQLUSER") != null) dbUser = System.getenv("MYSQLUSER").trim();
         else if (System.getProperty("db.user") != null) dbUser = System.getProperty("db.user").trim();
 
         String envPass = System.getenv("PULSEROUTE_DB_PASSWORD");
         if (envPass != null) dbPassword = envPass;
+        else if (System.getenv("MYSQLPASSWORD") != null) dbPassword = System.getenv("MYSQLPASSWORD");
         else if (System.getProperty("db.password") != null) dbPassword = System.getProperty("db.password");
 
         // Load MySQL Driver
@@ -48,6 +61,38 @@ public class DBConnection {
         } catch (ClassNotFoundException e) {
             System.err.println("[PulseRoute DBConnection] Warning: MySQL Driver class not found: " + DRIVER_CLASS);
         }
+    }
+
+    /**
+     * Parses standard JDBC URLs or standard mysql://user:pass@host:port/db connection strings.
+     */
+    private static void parseAndSetDbConfig(String rawUrl) {
+        if (rawUrl.startsWith("mysql://")) {
+            try {
+                java.net.URI uri = new java.net.URI(rawUrl);
+                String userInfo = uri.getUserInfo();
+                if (userInfo != null && userInfo.contains(":")) {
+                    String[] parts = userInfo.split(":", 2);
+                    dbUser = parts[0];
+                    dbPassword = parts[1];
+                }
+                String host = uri.getHost();
+                int port = uri.getPort() > 0 ? uri.getPort() : 3306;
+                String path = uri.getPath(); // e.g. "/railway"
+                if (path == null || path.isEmpty() || path.equals("/")) {
+                    path = "/pulseroute";
+                }
+                String query = uri.getQuery();
+                dbUrl = "jdbc:mysql://" + host + ":" + port + path + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8";
+                if (query != null && !query.isEmpty()) {
+                    dbUrl += "&" + query;
+                }
+                return;
+            } catch (Exception e) {
+                System.err.println("[PulseRoute DBConnection] Failed parsing mysql:// URI: " + e.getMessage());
+            }
+        }
+        dbUrl = rawUrl;
     }
 
     /**
