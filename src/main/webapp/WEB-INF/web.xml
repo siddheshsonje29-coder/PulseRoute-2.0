@@ -23,6 +23,11 @@
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 
+    <!-- Database Schema Auto-Initializer Listener -->
+    <listener>
+        <listener-class>com.pulseroute.listener.DatabaseInitListener</listener-class>
+    </listener>
+
     <!-- Authentication Filter -->
     <filter>
         <filter-name>AuthFilter</filter-name>
