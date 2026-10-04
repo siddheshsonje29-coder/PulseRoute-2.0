@@ -448,21 +448,36 @@
 
       try {
         // 1. Fetch Ambulances
-        const ambRes = await fetch('hospital/ambulances', { headers: { 'Accept': 'application/json' } });
-        allAmbulances = ambData.ambulances || [];
-        dispatchableAmbulances = (ambData.dispatchable && ambData.dispatchable.length > 0)
-          ? ambData.dispatchable
-          : allAmbulances.filter(a => (a.isDispatchable === true || (a.status === 'AVAILABLE' && a.authorizationStatus === 'AUTHORIZED')));
+        try {
+          const ambRes = await fetch('hospital/ambulances', { headers: { 'Accept': 'application/json' } });
+          if (ambRes.ok) {
+            const ambData = await ambRes.json();
+            allAmbulances = ambData.ambulances || [];
+            dispatchableAmbulances = (ambData.dispatchable && ambData.dispatchable.length > 0)
+              ? ambData.dispatchable
+              : allAmbulances.filter(a => (a.isDispatchable === true || (a.status === 'AVAILABLE' && a.authorizationStatus === 'AUTHORIZED')));
 
-        document.getElementById('badgeFleetCount').textContent = allAmbulances.length;
-        renderFleetTable(allAmbulances);
+            document.getElementById('badgeFleetCount').textContent = allAmbulances.length;
+            renderFleetTable(allAmbulances);
+          }
+        } catch (ambErr) {
+          console.error("Ambulance fetch error:", ambErr);
+        }
 
         // 2. Fetch Emergencies
-        const reqRes = await fetch('hospital/emergencies', { headers: { 'Accept': 'application/json' } });
-        const reqData = await reqRes.json();
-        allRequests = reqData.emergencies || reqData.requests || [];
-
-        renderRequestsList(allRequests);
+        try {
+          const reqRes = await fetch('hospital/emergencies', { headers: { 'Accept': 'application/json' } });
+          if (reqRes.ok) {
+            const reqData = await reqRes.json();
+            allRequests = reqData.emergencies || reqData.requests || [];
+            renderRequestsList(allRequests);
+          } else {
+            renderRequestsList(allRequests);
+          }
+        } catch (reqErr) {
+          console.error("Emergencies fetch error:", reqErr);
+          renderRequestsList(allRequests);
+        }
 
         // Update counts
         const pendingCount = allRequests.filter(r => ['PENDING', 'RECEIVED', 'UNDER_REVIEW'].includes(r.status)).length;

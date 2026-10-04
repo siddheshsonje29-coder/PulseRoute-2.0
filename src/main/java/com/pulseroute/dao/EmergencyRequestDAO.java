@@ -20,6 +20,35 @@ public class EmergencyRequestDAO {
     private static final java.util.concurrent.ConcurrentHashMap<Integer, EmergencyRequest> memoryRequests = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.concurrent.atomic.AtomicInteger memoryCounter = new java.util.concurrent.atomic.AtomicInteger(500);
 
+    static {
+        // Pre-seed live demo emergency requests so hospital command center immediately displays pending calls
+        EmergencyRequest demo1 = new EmergencyRequest();
+        demo1.setRequestId(501);
+        demo1.setUserId(1);
+        demo1.setUserName("Rahul Sharma");
+        demo1.setUserMobile("+91 98201 23456");
+        demo1.setUserEmergencyContact("+91 98201 99999");
+        demo1.setEmergencyType("Cardiac Emergency");
+        demo1.setUserLocation("Flat 402, Hill Road, Bandra West, Mumbai");
+        demo1.setStatus("PENDING");
+        demo1.setCreatedAt(new Timestamp(System.currentTimeMillis() - 180000));
+        demo1.setNotes("Severe chest pain, immediate paramedic unit requested");
+        memoryRequests.put(501, demo1);
+
+        EmergencyRequest demo2 = new EmergencyRequest();
+        demo2.setRequestId(502);
+        demo2.setUserId(2);
+        demo2.setUserName("Pooja Verma");
+        demo2.setUserMobile("+91 98202 34567");
+        demo2.setUserEmergencyContact("+91 98202 88888");
+        demo2.setEmergencyType("Severe Trauma / Accident");
+        demo2.setUserLocation("SV Road Junction, near Bandra Flyover, Mumbai");
+        demo2.setStatus("PENDING");
+        demo2.setCreatedAt(new Timestamp(System.currentTimeMillis() - 360000));
+        demo2.setNotes("Road traffic collision, priority emergency corridor needed");
+        memoryRequests.put(502, demo2);
+    }
+
     public int createRequest(EmergencyRequest req) {
         String sql = "INSERT INTO emergency_requests (user_id, emergency_type, user_location, status, notes) " +
                      "VALUES (?, ?, ?, 'PENDING', ?)";
