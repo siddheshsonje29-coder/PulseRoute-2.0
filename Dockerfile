@@ -7,11 +7,12 @@ FROM tomcat:11.0-jdk21-temurin
 LABEL maintainer="PulseRoute Dev Team"
 LABEL description="PulseRoute 2.0 Emergency Healthcare Coordination Platform"
 
-# Remove default Tomcat web applications
-RUN rm -rf /usr/local/tomcat/webapps/*
+# Remove default Tomcat web applications and prepare ROOT folder
+RUN rm -rf /usr/local/tomcat/webapps/* && mkdir -p /usr/local/tomcat/webapps/ROOT
 
-# Deploy compiled production artifact directly as ROOT.war (serves at /)
-COPY pulseroute.war /usr/local/tomcat/webapps/ROOT.war
+# Copy and extract production artifact directly to ROOT directory
+COPY pulseroute.war /tmp/pulseroute.war
+RUN cd /usr/local/tomcat/webapps/ROOT && jar -xf /tmp/pulseroute.war && rm /tmp/pulseroute.war
 
 EXPOSE 8080
 
